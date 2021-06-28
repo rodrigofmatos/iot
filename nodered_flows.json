@@ -1,0 +1,710 @@
+[
+    {
+        "id": "c0bbb6d0.b8ae3",
+        "type": "tab",
+        "label": "draft",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3f2d92c6.9ecd1e",
+        "type": "fs-ops-dir",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "lista-arquivos-recebidos",
+        "path": "/home/ubuntu/filereceived",
+        "pathType": "str",
+        "filter": "*",
+        "filterType": "str",
+        "dir": "arquivo",
+        "dirType": "msg",
+        "x": 390,
+        "y": 500,
+        "wires": [
+            [
+                "af365ee9.a8025"
+            ]
+        ]
+    },
+    {
+        "id": "af365ee9.a8025",
+        "type": "switch",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "valida-conteúdo",
+        "property": "arquivo[0]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 600,
+        "y": 500,
+        "wires": [
+            [
+                "5780b6d3.3f6988"
+            ],
+            [
+                "7652e52b.cf297c"
+            ]
+        ]
+    },
+    {
+        "id": "99db9221.af8c7",
+        "type": "delay",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "temporizador",
+        "pauseType": "queue",
+        "timeout": "15",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "10",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 190,
+        "y": 500,
+        "wires": [
+            [
+                "3f2d92c6.9ecd1e"
+            ]
+        ]
+    },
+    {
+        "id": "84ac90e5.2e411",
+        "type": "fs-ops-move",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "transfere-para-fileprocessed",
+        "sourcePath": "/home/ubuntu/filereceived",
+        "sourcePathType": "str",
+        "sourceFilename": "payload",
+        "sourceFilenameType": "msg",
+        "destPath": "/home/ubuntu/fileprocessed",
+        "destPathType": "str",
+        "destFilename": "payload",
+        "destFilenameType": "msg",
+        "link": false,
+        "x": 880,
+        "y": 600,
+        "wires": [
+            [
+                "291afb36.a264f4"
+            ]
+        ]
+    },
+    {
+        "id": "2acb6c56.0131a4",
+        "type": "link in",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "Loop de leitura enquanto vazio",
+        "links": [
+            "291afb36.a264f4",
+            "7652e52b.cf297c",
+            "e72cc686.119b78",
+            "5aa106bf.c613b8",
+            "4fd798ff.6e08a8",
+            "b3c1cef6.cae18"
+        ],
+        "x": 75,
+        "y": 500,
+        "wires": [
+            [
+                "99db9221.af8c7"
+            ]
+        ]
+    },
+    {
+        "id": "291afb36.a264f4",
+        "type": "link out",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "",
+        "links": [
+            "2acb6c56.0131a4",
+            "c0e8ecb6.3a396"
+        ],
+        "x": 1075,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "7652e52b.cf297c",
+        "type": "link out",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "Diretório vazio",
+        "links": [
+            "2acb6c56.0131a4"
+        ],
+        "x": 735,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "5780b6d3.3f6988",
+        "type": "change",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "extrai-arquivo-para-envio-s3",
+        "rules": [
+            {
+                "t": "set",
+                "p": "localFilename",
+                "pt": "msg",
+                "to": "\"/home/ubuntu/filereceived/\" & $.arquivo[0]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "filename",
+                "pt": "msg",
+                "to": "$.arquivo[0]",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "arquivoescolhido",
+                "pt": "global",
+                "to": "$.arquivo[0]",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 480,
+        "wires": [
+            [
+                "bc7fa16f.bc70c"
+            ]
+        ]
+    },
+    {
+        "id": "66d1110e.befea",
+        "type": "mqtt in",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "ENERGIA",
+        "topic": "clp_itb",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "d3615347.ec907",
+        "x": 120,
+        "y": 360,
+        "wires": [
+            [
+                "f24ff689.63b648"
+            ]
+        ]
+    },
+    {
+        "id": "445ff5a1.278b9c",
+        "type": "mqtt in",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "UTILITY",
+        "topic": "utility_itb",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "d3615347.ec907",
+        "x": 110,
+        "y": 425,
+        "wires": [
+            [
+                "8fc4a6bf.7276a8"
+            ]
+        ]
+    },
+    {
+        "id": "f24ff689.63b648",
+        "type": "file",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "cria-json",
+        "filename": "/home/ubuntu/filereceived/energy.json",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 280,
+        "y": 360,
+        "wires": [
+            [
+                "16dfd742.883ed9"
+            ]
+        ]
+    },
+    {
+        "id": "16dfd742.883ed9",
+        "type": "exec",
+        "z": "c0bbb6d0.b8ae3",
+        "command": "gzip /home/ubuntu/filereceived/energy.json | mv /home/ubuntu/filereceived/energy.json.gz  /home/ubuntu/filereceived/energy$(date \"+%s\").json.gz",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "gzip-json-energy",
+        "x": 490,
+        "y": 360,
+        "wires": [
+            [
+                "5aa106bf.c613b8"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8fc4a6bf.7276a8",
+        "type": "file",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "cria-json",
+        "filename": "/home/ubuntu/filereceived/utility.json",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 280,
+        "y": 425,
+        "wires": [
+            [
+                "d9b48521.fa5218"
+            ]
+        ]
+    },
+    {
+        "id": "d9b48521.fa5218",
+        "type": "exec",
+        "z": "c0bbb6d0.b8ae3",
+        "command": "gzip /home/ubuntu/filereceived/utility.json | mv /home/ubuntu/filereceived/utility.json.gz  /home/ubuntu/filereceived/utility$(date \"+%s\").json.gz",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "gzip-json-utility",
+        "x": 480,
+        "y": 425,
+        "wires": [
+            [
+                "5aa106bf.c613b8"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "5aa106bf.c613b8",
+        "type": "link out",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "",
+        "links": [
+            "2acb6c56.0131a4"
+        ],
+        "x": 655,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "683e5a30.eb6a04",
+        "type": "exec",
+        "z": "c0bbb6d0.b8ae3",
+        "command": "rm -rf /home/ubuntu/filereceived/*",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "esvazia-dir-arquivos-recebidos-locais",
+        "x": 590,
+        "y": 160,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "73c571f3.52383",
+        "type": "inject",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "1.2. Limpar conteúdo de FILERECEIVED",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 240,
+        "y": 160,
+        "wires": [
+            [
+                "683e5a30.eb6a04"
+            ]
+        ]
+    },
+    {
+        "id": "af418a96.d9c028",
+        "type": "exec",
+        "z": "c0bbb6d0.b8ae3",
+        "command": "rm -rf /home/ubuntu/fileprocessed/*",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "esvazia-dir-arquivos-processados-locais",
+        "x": 600,
+        "y": 220,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "751a429e.96f11c",
+        "type": "inject",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "1.3. Limpar conteúdo de FILEPROCESSED",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 240,
+        "y": 220,
+        "wires": [
+            [
+                "af418a96.d9c028"
+            ]
+        ]
+    },
+    {
+        "id": "bc7fa16f.bc70c",
+        "type": "amazon s3 out",
+        "z": "c0bbb6d0.b8ae3",
+        "d": true,
+        "aws": "",
+        "bucket": "cognimain",
+        "filename": "",
+        "localFilename": "",
+        "region": "sa-east-1",
+        "name": "ENVIA-S3",
+        "x": 980,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "6e59ea4b.484cf4",
+        "type": "function",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "nome-arquivo-recebido",
+        "func": "var recebearquivo = global.get(\"arquivoescolhido\")\nmsg.payload = recebearquivo\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 590,
+        "y": 600,
+        "wires": [
+            [
+                "84ac90e5.2e411"
+            ]
+        ]
+    },
+    {
+        "id": "9d6901c6.2fcc3",
+        "type": "status",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "valida-upload-s3",
+        "scope": [
+            "bc7fa16f.bc70c"
+        ],
+        "x": 140,
+        "y": 600,
+        "wires": [
+            [
+                "6e172ca.b6234d4"
+            ]
+        ]
+    },
+    {
+        "id": "6e172ca.b6234d4",
+        "type": "switch",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "testa-upload",
+        "property": "status.shape",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 350,
+        "y": 600,
+        "wires": [
+            [
+                "6e59ea4b.484cf4"
+            ]
+        ]
+    },
+    {
+        "id": "3abca375.7ab36c",
+        "type": "status",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "captura-erro-s3",
+        "scope": [
+            "bc7fa16f.bc70c"
+        ],
+        "x": 140,
+        "y": 660,
+        "wires": [
+            [
+                "c305567c.a22bf8"
+            ]
+        ]
+    },
+    {
+        "id": "c305567c.a22bf8",
+        "type": "switch",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "testa-erro-s3",
+        "property": "status.fill",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "red",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 350,
+        "y": 660,
+        "wires": [
+            [
+                "43195fa7.0229"
+            ]
+        ]
+    },
+    {
+        "id": "43195fa7.0229",
+        "type": "change",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "coleta-dados-envio-email",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Alerta de erro Cliente CARGILL",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "status",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 590,
+        "y": 660,
+        "wires": [
+            [
+                "a2b891e5.961b9",
+                "8c6af032.4eb04"
+            ]
+        ]
+    },
+    {
+        "id": "a2b891e5.961b9",
+        "type": "e-mail",
+        "z": "c0bbb6d0.b8ae3",
+        "server": "smtp.office365.com",
+        "port": "587",
+        "secure": false,
+        "tls": true,
+        "name": "rodrigo.matos@infomach.com.br",
+        "dname": "envia-email-erro-s3",
+        "x": 850,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "7c779019.de33d",
+        "type": "telegram sender",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "botTelegram",
+        "bot": "a15932e6.a9dec",
+        "haserroroutput": true,
+        "outputs": 2,
+        "x": 1110,
+        "y": 720,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8c6af032.4eb04",
+        "type": "change",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "coleta-dados-envio-telegram",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.content",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.type",
+                "pt": "msg",
+                "to": "message",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload.chatId",
+                "pt": "msg",
+                "to": "1091706488",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 880,
+        "y": 720,
+        "wires": [
+            [
+                "7c779019.de33d"
+            ]
+        ]
+    },
+    {
+        "id": "3f7f2e07.f006d2",
+        "type": "comment",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "1. ORGANIZAÇÃO DE DIRETÓRIOS --> PROJETO COGNI_INFOMACH",
+        "info": "",
+        "x": 270,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ef74aa1b.253ae8",
+        "type": "comment",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "2. PAINEL DE COMUNICAÇÃO LOCAL --> AWS S3",
+        "info": "",
+        "x": 210,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "37d490bc.095dc",
+        "type": "inject",
+        "z": "c0bbb6d0.b8ae3",
+        "name": "1.1. Criação dos diretórios locais FILERECEIVED e FILEPROCESSED",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 330,
+        "y": 100,
+        "wires": [
+            [
+                "cf482713.04de28"
+            ]
+        ]
+    },
+    {
+        "id": "cf482713.04de28",
+        "type": "exec",
+        "z": "c0bbb6d0.b8ae3",
+        "command": "mkdir -p /home/ubuntu/filereceived | mkdir -p /home/ubuntu/fileprocessed",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "cria-dir-locais-se-nao-existirem",
+        "x": 750,
+        "y": 100,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "d3615347.ec907",
+        "type": "mqtt-broker",
+        "name": "CARGILL",
+        "broker": "iot.cogni.group",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "a15932e6.a9dec",
+        "type": "telegram bot",
+        "botname": "InfomachBot",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    }
+]
